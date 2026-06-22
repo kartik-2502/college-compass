@@ -1,36 +1,9 @@
 import "dotenv/config";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { extraColleges, type CollegeSeed } from "./extra-colleges";
 
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL ?? "file:./dev.db",
-});
-
-const prisma = new PrismaClient({ adapter });
-
-type CollegeSeed = {
-  slug: string;
-  name: string;
-  city: string;
-  state: string;
-  type: string;
-  feesPerYear: number;
-  rating: number;
-  overview: string;
-  established: number;
-  accreditation: string;
-  website: string;
-  courses: { name: string; degree: string; duration: string; feesPerYear: number; seats: number }[];
-  placement: {
-    year: number;
-    avgPackage: number;
-    highestPackage: number;
-    placementRate: number;
-    topRecruiters: string[];
-  };
-  reviews: { authorName: string; rating: number; title: string; content: string }[];
-};
+const prisma = new PrismaClient();
 
 const colleges: CollegeSeed[] = [
   {
@@ -696,6 +669,7 @@ const colleges: CollegeSeed[] = [
       { authorName: "Lakshmi V.", rating: 4.7, title: "Modern IIT", content: "Beautiful campus with fast-growing research in AI and robotics." },
     ],
   },
+  ...extraColleges,
 ];
 
 async function main() {

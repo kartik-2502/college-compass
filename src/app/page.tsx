@@ -2,12 +2,21 @@ import Link from "next/link";
 import { searchColleges } from "@/lib/colleges";
 import { HeroCollegeSearch } from "@/components/colleges/college-search-autocomplete";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
-  const { colleges, pagination } = await searchColleges({
-    sort: "rating",
-    page: 1,
-    limit: 6,
-  });
+  let colleges: Awaited<ReturnType<typeof searchColleges>>["colleges"] = [];
+  let total = 0;
+  let dbError = false;
+
+  try {
+    const result = await searchColleges({ sort: "rating", page: 1, limit: 6 });
+    colleges = result.colleges;
+    total = result.pagination.total;
+  } catch (error) {
+    console.error("Homepage database error:", error);
+    dbError = true;
+  }
 
   return (
     <div>
@@ -33,7 +42,7 @@ export default async function HomePage() {
               Find the right college with data you can trust
             </h1>
             <p className="mt-4 text-lg text-slate-700 dark:text-slate-300">
-              Search 30+ institutes, filter by fees and ratings, compare side-by-side, and save
+              Search 60+ institutes, filter by fees and ratings, compare side-by-side, and save
               your shortlist — all powered by a real database and REST APIs.
             </p>
             <HeroCollegeSearch />
@@ -56,13 +65,30 @@ export default async function HomePage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        {dbError ? (
+          <div className="surface p-8 text-center">
+            <p className="text-lg font-medium text-slate-900 dark:text-slate-100">
+              Unable to load colleges right now
+            </p>
+            <p className="mt-2 text-slate-600 dark:text-slate-400">
+              The database may be waking up. Please refresh in a few seconds or browse directly.
+            </p>
+            <Link
+              href="/colleges"
+              className="mt-4 inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            >
+              Try Explore page
+            </Link>
+          </div>
+        ) : (
+          <>
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Top rated colleges</h2>
             <p className="mt-1 text-slate-600 dark:text-slate-400">Curated from our seeded dataset of Indian institutes</p>
           </div>
           <Link href="/colleges" className="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">
-            View all {pagination.total} →
+            View all {total} →
           </Link>
         </div>
 
@@ -87,6 +113,8 @@ export default async function HomePage() {
             </article>
           ))}
         </div>
+          </>
+        )}
       </section>
 
       <section className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">

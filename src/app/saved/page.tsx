@@ -9,6 +9,8 @@ export const metadata = {
   title: "Saved Items",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function SavedPage() {
   const session = await auth();
   if (!session?.user?.id) {

@@ -12,6 +12,8 @@ export const metadata = {
   title: "Compare Colleges",
 };
 
+export const dynamic = "force-dynamic";
+
 async function CompareContent({ ids }: { ids?: string }) {
   const idList = ids?.split(",").filter(Boolean) ?? [];
 

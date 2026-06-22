@@ -13,6 +13,8 @@ export const metadata = {
   title: "Explore Colleges",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function CollegesPage({ searchParams }: PageProps) {
   const rawParams = await searchParams;
   const flatParams = Object.fromEntries(

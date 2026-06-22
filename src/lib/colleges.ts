@@ -1,4 +1,4 @@
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import type { CollegeSearchParams } from "@/lib/validations";
 
@@ -25,9 +25,9 @@ export async function searchColleges(params: CollegeSearchParams) {
       q
         ? {
             OR: [
-              { name: { contains: q } },
-              { city: { contains: q } },
-              { state: { contains: q } },
+              { name: { contains: q, mode: "insensitive" } },
+              { city: { contains: q, mode: "insensitive" } },
+              { state: { contains: q, mode: "insensitive" } },
             ],
           }
         : {},
@@ -111,10 +111,10 @@ export async function getCollegeSuggestions(query: string, limit = 6) {
   return prisma.college.findMany({
     where: {
       OR: [
-        { name: { contains: q } },
-        { city: { contains: q } },
-        { state: { contains: q } },
-        { type: { contains: q } },
+        { name: { contains: q, mode: "insensitive" } },
+        { city: { contains: q, mode: "insensitive" } },
+        { state: { contains: q, mode: "insensitive" } },
+        { type: { contains: q, mode: "insensitive" } },
       ],
     },
     orderBy: [{ rating: "desc" }, { name: "asc" }],

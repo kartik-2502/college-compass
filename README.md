@@ -17,7 +17,7 @@ Inspired by platforms like [Careers360](https://www.careers360.com/) and [Colleg
 
 - **Frontend:** Next.js 16 (App Router), React 19, Tailwind CSS 4
 - **Backend:** Next.js Route Handlers (REST APIs)
-- **Database:** SQLite (dev) via Prisma 7 — swap to PostgreSQL for production
+- **Database:** Neon PostgreSQL via Prisma 6
 - **Auth:** NextAuth.js v5 (credentials provider)
 - **Validation:** Zod
 
@@ -34,7 +34,9 @@ Inspired by platforms like [Careers360](https://www.careers360.com/) and [Colleg
 # Install dependencies
 npm install
 
-# Create database schema and seed 30 colleges
+# Copy .env.example to .env and set your Neon DATABASE_URL
+
+# Create database schema and seed 60 colleges
 npm run db:setup
 
 # Start development server
@@ -66,10 +68,7 @@ src/
 ├── app/              # Pages and API routes
 ├── components/       # UI components (colleges, compare, auth, layout)
 ├── lib/              # DB client, business logic, validations
-└── generated/prisma/ # Prisma client (generated)
-prisma/
-├── schema.prisma     # Database models
-└── seed.ts           # Seed data (30 Indian colleges)
+└── prisma/           # Schema + seed data (60 Indian colleges)
 ```
 
 ## Deployment
