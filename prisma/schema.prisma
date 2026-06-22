@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  savedColleges    SavedCollege[]
+  savedComparisons SavedComparison[]
+  reviews          Review[]
+}
+
+model College {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  city          String
+  state         String
+  type          String
+  feesPerYear   Int
+  rating        Float
+  overview      String
+  established   Int?
+  accreditation String?
+  website       String?
+
+  courses    Course[]
+  placements Placement[]
+  reviews    Review[]
+  savedBy    SavedCollege[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([state, city])
+  @@index([rating])
+  @@index([feesPerYear])
+  @@index([name])
+}
+
+model Course {
+  id          String  @id @default(cuid())
+  collegeId   String
+  name        String
+  degree      String
+  duration    String
+  feesPerYear Int?
+  seats       Int?
+
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  @@index([collegeId])
+}
+
+model Placement {
+  id             String @id @default(cuid())
+  collegeId      String
+  year           Int
+  avgPackage     Float
+  highestPackage Float
+  placementRate  Float
+  topRecruiters  String
+
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  @@index([collegeId])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  collegeId  String
+  userId     String?
+  authorName String
+  rating     Float
+  title      String
+  content    String
+  createdAt  DateTime @default(now())
+
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([collegeId])
+}
+
+model SavedCollege {
+  id        String   @id @default(cuid())
+  userId    String
+  collegeId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, collegeId])
+}
+
+model SavedComparison {
+  id         String   @id @default(cuid())
+  userId     String
+  name       String?
+  collegeIds String
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

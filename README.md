@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# College Compass
 
-## Getting Started
+A production-oriented MVP for college discovery and decision-making. Search institutes, view detailed profiles, compare side-by-side, and save shortlists with authentication.
 
-First, run the development server:
+Inspired by platforms like [Careers360](https://www.careers360.com/) and [Collegedunia](https://collegedunia.com/).
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| **College listing + search** | Server-side search with filters (state, type, fees, rating), sorting, and pagination |
+| **College detail pages** | Overview, courses, placements, and reviews — all from the database |
+| **Compare colleges** | Side-by-side comparison of 2–3 colleges (fees, placements, ratings, location) |
+| **Auth + saved items** | Register/login, save colleges, save comparisons |
+
+## Tech stack
+
+- **Frontend:** Next.js 16 (App Router), React 19, Tailwind CSS 4
+- **Backend:** Next.js Route Handlers (REST APIs)
+- **Database:** SQLite (dev) via Prisma 7 — swap to PostgreSQL for production
+- **Auth:** NextAuth.js v5 (credentials provider)
+- **Validation:** Zod
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 20+
+- npm
+
+### Setup
 
 ```bash
+# Install dependencies
+npm install
+
+# Create database schema and seed 30 colleges
+npm run db:setup
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo account
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Email:** `demo@collegecompass.in`
+- **Password:** `demo1234`
 
-## Learn More
+## API endpoints
 
-To learn more about Next.js, take a look at the following resources:
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/colleges` | Search/list colleges (query: `q`, `state`, `type`, `minFees`, `maxFees`, `minRating`, `sort`, `page`, `limit`) |
+| GET | `/api/colleges/[slug]` | College detail by slug |
+| GET | `/api/compare?ids=id1,id2` | Compare 2–3 colleges |
+| POST | `/api/auth/register` | Create account |
+| GET/POST/DELETE | `/api/saved/colleges` | Manage saved colleges (auth required) |
+| GET/POST/DELETE | `/api/saved/comparisons` | Manage saved comparisons (auth required) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/              # Pages and API routes
+├── components/       # UI components (colleges, compare, auth, layout)
+├── lib/              # DB client, business logic, validations
+└── generated/prisma/ # Prisma client (generated)
+prisma/
+├── schema.prisma     # Database models
+└── seed.ts           # Seed data (30 Indian colleges)
+```
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Vercel (recommended)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Push to GitHub and import in Vercel
+2. Set environment variables:
+   - `DATABASE_URL` — use [Turso](https://turso.tech/), [Neon](https://neon.tech/), or Vercel Postgres
+   - `AUTH_SECRET` — random 32+ char string
+   - `NEXTAUTH_URL` — your production URL
+3. Update `prisma/schema.prisma` datasource to `postgresql` if using Postgres
+4. Run migrations on deploy: add `prisma db push` to build or use `prisma migrate deploy`
+
+### Docker / self-hosted
+
+```bash
+npm run build
+npm run db:setup
+npm start
+```
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
+| `npm run db:setup` | Push schema + seed database |
+| `npm run db:seed` | Re-seed data only |
+
+## License
+
+MIT
